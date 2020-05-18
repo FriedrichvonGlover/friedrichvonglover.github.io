@@ -116,7 +116,8 @@
 		
 		$("#random_button").click(function(){			
 			$("#game_div").html("");			
-			var players = $("#players_text").val().split(',');
+			var playerlines = document.getElementById("players_text");
+                        var players = playerlines.value.split("\n");
 			for(var i in players)
 				console.log(players[i]);
 			var roles = random_roles(players.length);
