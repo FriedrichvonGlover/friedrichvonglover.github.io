@@ -55,7 +55,7 @@
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<h2>Forum Werwolf</h2>	
 	<div id="pregame_div">		
-		Spielernamen: <textarea id="players_text" title="Tippe die Namen der Spieler ein, getrennt mit einem Komma" class="inline"></textarea>		
+		Spielernamen: <textarea id="players_text" title="Tippe die Namen der Spieler ein, jeweils pro Zeile" class="inline"></textarea>		
 		<table class = "inline">
 			<tr>
 				<td><button id="generate_button" class="inline" title="Tippe die Namen der Spieler ein, wähle die passende Anzahl an Rollen aus, klicke dann auf den Button um das Spiel zu starten">Generiere!</button></td>			
@@ -129,7 +129,7 @@
 			players_alive = players.length;
 			players = randomize_array(players);
 			for(var i in players){
-				var person = players[i] + ": " + roles[i];
+				var person = players[i] + ": " "\t" + roles[i];
 				$("#game_div").append("<div name='player_div' class ='inline capital up'>"+person+"</div><br>");					
 			}
 			
