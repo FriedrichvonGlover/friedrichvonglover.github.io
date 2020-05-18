@@ -1,47 +1,309 @@
+<!DOCTYPE html>
 <html>
 
-    <head>
-        <title>kettlerne</title>
-        <link rel="stylesheet" type="text/css" href="common/libs/css/animate.css" />
-        <link rel="stylesheet" type="text/css" href="common/libs/css/font-awesome.min.css" />
-        <!-- link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/js/all.js" -->
-        <!-- link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/js/v4-shims.js" -->
-        <link rel="stylesheet" type="text/css" href="index.css" />
-        <link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-        <script src="common/libs/js/jquery.min.js"></script>
-        <script src="common/data/units.js"></script>
-        <script src="common/js/utils.js"></script>
-        <script src="common/js/nonSuspicious.js"></script>
-<!--        <meta name="viewport" content="initial-scale=1, user-scalable=no, user-scalable=0">
-        <meta name="author" content="Solaris, Zeenigami, and Mondfischer">
-        <meta name="keywords" content="OPTC, One Piece Treasure Cruise, Database, Calculator, Guides, Help, Walkthroughs, Tutorials">
-        <meta name="description" content="Fan run database for One Piece Treasure Cruise. Includes a character database with all unit captain abilities, descriptions, sailor abilities, and special abilities. Also includes a damage calculator that accurately helps you find out how much damage your team will deal.">
--->
-        
-<!-- Google Analytics -->
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Test : test">
 
-  ga('create', 'UA-73715806-1', 'auto');
-  ga('send', 'pageview');
+    <!--<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css"> -->
+    <title>Werwolf Forumsspiel Generator</title>
+  </head>
 
-</script>
-
-    </head>
-
-    <body>
-       
-        <div id="container">
-            <a class="animated zoomInLeft button blue" href="Sendung">Sendungen</a>
-            <a class="animated zoomInRight button green" href="characters">Character Table</a>
-            <a class="animated zoomInLeft button yellow" href="PenPaper">Pen & Paper</a>
-<!--
-            <a class="animated zoomInLeft button brown" href="turtles">Turtle Times</a>
--->
-
-    </body>
-
+  <body>
+	<style>
+		.inline {
+			display: inline-block;
+		}
+		
+		.left {
+			float: left;
+		}
+		
+		.right{
+			float: right;
+		}
+		
+		td {
+			padding: 3px;
+		}
+		
+		.capital {
+			text-transform: capitalize;
+		}
+		
+		.hidden {
+			display: none;
+		}
+		
+		.up {
+			vertical-align: top;
+		}
+		
+		#game_div { 
+			padding-right: 50px;
+		}
+		
+		.fine_print {
+			font-size: 75%;
+		}
+		
+	</style>
+  
+  
+	
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<h2>Forum Werwolf</h2>	
+	<div id="pregame_div">		
+		Spielernamen: <textarea id="players_text" title="Tippe die Namen der Spieler ein, getrennt mit einem Komma" class="inline"></textarea>		
+		<table class = "inline">
+			<tr>
+				<td><button id="generate_button" class="inline" title="Tippe die Namen der Spieler ein, wähle die passende Anzahl an Rollen aus, klicke dann auf den Button um das Spiel zu starten">Generiere!</button></td>			
+				<td><button id="random_button" title="Tippe die Namen der Spieler ein, klicke dann auf den Button um ein zufälliges Spiel zu erzeugen!">Zufälliges Spiel!</button></td>
+			</tr>			
+		</table>
+		
+		<br><br>	
+		<table id="roles_table" class="inline capital"><tbody><tr><th>Dorfrollen</th><th>Dorfrollen 2<th>Werwolf Rollen</th><th>andere Rollen</th></tr></tbody></table>		
+	</div>
+	
+	<div id="in_game_div" class="hidden">
+		<button id="reset_button">Zurück</button><br>
+		<button id="next_button"></button>
+		<br>
+		<p id="day_counter"></p>
+		<p id="player_status"></p>
+		<!--<div id="timer_div" class="inline">300</div>-->
+		<h3 class="inline">Spieler</h3>
+		<p class="fine_print inline">(Klicke auf den Namen um ihn zu töten)</p><br>		
+		<div id="game_div" class="inline up"></div>
+		<textarea id="note_box" class="inline" cols=30 rows=5>Nutze diesen raum um etwas festzuhalten / schreibe Notizen.</textarea>
+	</div>
+	
+	
+	<script>	
+		var day = "Nacht";
+		var phase_counter = 1;
+		var day_button_msg = "Aufwachen";
+		var players_dead = 0;
+		var players_alive;
+		var village_roles = ["Dorfbewohner", "reine Seele", "Seherin", "Aura Seherin", "Amor", "Hexe", "Leibwächter", "Jäger", "Kleine Mädchen", "Heiler", "Der Alte", "Sündenbock", "Dorfdepp", "alte Vettel", "alter Mann"]
+		var village_roles_2 = ["Aussätzige", "Beschwörerin", "Zwei Schwestern", "Drei Brüder", "Fuchs", "Bärenführer", "Stotternde Richter", "Ritter der rostigen Klinge", "Aussätzige", "Beschwörerin", "Freimaurer", "Geist", "harter Bursche", "Idiot", "Lykanthrophin", "Märtyrerin", "Magier", "Unruhestifterin"];
+		var werewolf_roles = ["Werwolf", "Der Große, böse Wolf", "Der Urwolf", "Der Weiße Werwolf", "Wolfsjunges"];
+		var third_party_roles = ["Vampir", "Werhamster", "Flötenspieler", "Die Ergebene Magd", "Der Gaukler", "Der Dieb", "Der Wolfshund", "Das Wilde Kind"];
+		
+		
+		list_roles();
+		
+		$("#generate_button").click(function(){			
+			$("#game_div").html("");			
+			var players = $("#players_text").val().split(',');
+			for(var i in players)
+				console.log(players[i]);
+			var roles = count_roles();
+			console.log(JSON.stringify(roles));
+			if(roles.length != players.length){
+				if(roles.length > players.length)
+					alert(roles.length - players.length + " Rollen mehr als Spieler");
+				else
+					alert(players.length - roles.length + " Spieler mehr als Rollen.");
+			}else{	
+				create_game(players,roles);
+			}
+			
+		});
+		
+		$("#random_button").click(function(){			
+			$("#game_div").html("");			
+			var players = $("#players_text").val().split(',');
+			for(var i in players)
+				console.log(players[i]);
+			var roles = random_roles(players.length);
+			console.log(JSON.stringify(roles));	
+			create_game(players, roles);				
+		});
+		
+		
+		function create_game(players, roles){
+			players_alive = players.length;
+			players = randomize_array(players);
+			for(var i in players){
+				var person = players[i] + ": " + roles[i];
+				$("#game_div").append("<div name='player_div' class ='inline capital up'>"+person+"</div><br>");					
+			}
+			
+			$("div[name='player_div']").click(function(){
+				if($(this).css("text-decoration") == "line-through"){
+					$(this).css({"text-decoration":""});						
+					players_alive++;
+					players_dead--;
+					update_player_status();
+				}
+				else{
+					$(this).css({"text-decoration":"line-through"});						
+					players_dead++;
+					players_alive--;
+					update_player_status();
+				}
+			});
+			
+			$("#in_game_div").toggleClass("hidden");
+			$("#pregame_div").toggleClass("hidden");
+			$("#day_counter").html(day + " " + phase_counter);
+			$("#next_button").html(day_button_msg);		
+			update_player_status();
+			//start_timer();
+		}
+		
+		$("#next_button").click(function(){
+			if(day == "Nacht"){
+				day = "Tag";
+				day_button_msg = "schlafen gehen";
+			}
+			else{
+				day = "Nacht";
+				phase_counter++;
+				day_button_msg = "Aufwachen";
+			}
+			
+			update_day_information();			
+			
+		});
+		
+		$("#reset_button").click(function(){
+			reset_elements();			
+			$("#in_game_div").toggleClass("hidden");
+			$("#pregame_div").toggleClass("hidden");
+		});
+		
+		function update_day_information(){
+			$("#day_counter").html(day + " " + phase_counter);
+			$("#next_button").html(day_button_msg);			
+		}
+		
+		function list_roles(){
+			var max_length = (Math.max(village_roles.length, werewolf_roles.length, third_party_roles.length));
+			
+			for(i = 0; i < max_length; i++){
+				var villager = (village_roles[i] != undefined ? village_roles[i] : "");
+				var villager2 = (village_roles_2[i] != undefined ? village_roles_2[i] : "");
+				var werewolf = (werewolf_roles[i] != undefined ? werewolf_roles[i] : "");
+				var third_party = (third_party_roles[i] != undefined ? third_party_roles[i] : "");
+			
+				$("#roles_table tbody").append("<tr>");				
+				$("#roles_table tbody").append(gen_role_html(villager));
+				$("#roles_table tbody").append(gen_role_html(villager2));
+				$("#roles_table tbody").append(gen_role_html(werewolf));
+				$("#roles_table tbody").append(gen_role_html(third_party));
+				$("#roles_table tbody").append("</tr>");
+			}
+		}
+		
+		function gen_role_html(role){			
+			var html = "<td>";
+			if(role != undefined && role != ""){
+				html += "<input name='"+role+"' class='left' type='checkbox'>";
+				html += role;
+				html += "<select name='"+role+"' class='right'>" + 
+				"<option value='1'>1</option><option value='2'>2</option>" +
+				"<option value='3'>3</option><option value='4'>4</option>" +
+				"<option value='5'>5</option><option value='6'>6</option>" +
+				"<option value='7'>7</option><option value='8'>8</option>" +
+				"<option value='9'>9</option><option value='10'>10</option>" +
+				"<option value='11'>11</option><option value='12'>12</option>" +
+				"<option value='13'>13</option><option value='14'>14</option>" +					
+				"</select>"; 
+			}
+			
+			html += "</td>";
+			return html;
+			
+		}
+		
+		function count_roles() {
+			var roles = [];
+			var checked_boxes = $("input[type='checkbox']");			
+			for(var i in checked_boxes){								
+				if(!isNaN(i) && $(checked_boxes[i]).get(0).checked == true){										
+					var name = $(checked_boxes[i]).attr('name');					
+					var times = $("select[name='"+name+"']").val();										
+					for(j = 0; j < times; j++){
+						roles.push(name);
+					}
+				}				
+			}			
+			return roles;
+		}
+		
+		function random_roles(village_count){		
+			var roles = get_all_roles();
+			var game_roles = [];
+			for(i = 0; i < village_count; i++){
+				var rand = Math.floor((Math.random()) * roles.length);
+				console.log(rand);
+				game_roles.push(roles[rand]);
+			}
+			
+				
+			return game_roles;
+		}
+		
+		function get_all_roles(){
+			var roles = [];
+			for(var i in village_roles)
+				roles.push(village_roles[i]);
+			for(var i in village_roles_2)
+				roles.push(village_roles_2[i]);	
+			for(var i in werewolf_roles)
+				roles.push(werewolf_roles[i]);
+			for(var i in third_party_roles)
+				roles.push(third_party_roles[i])
+				
+			return roles;
+		}
+		
+		function randomize_array(arr){
+			for(i = 0; i < arr.length; i++){
+				var rand = Math.floor(Math.random()*arr.length);
+				var tmp = arr[i];
+				arr[i] = arr[rand];
+				arr[rand] = tmp;
+			}
+			
+			return arr;
+		}
+		
+		function reset_elements(){
+			day = "Nacht";
+			phase_counter = 1;
+			day_button_msg = "Aufwachen";
+			update_day_information();
+			
+			
+			$("#players_text").val("");			
+			var checked_boxes = $("input[type='checkbox']");			
+			for(var i in checked_boxes){								
+				if(!isNaN(i)){										
+					$(checked_boxes[i]).attr('checked', false);
+				}				
+			}						
+			
+		}
+		
+		function update_player_status(){
+			$("#player_status").html("Spieler am Leben: " + players_alive + "<br> Spieler tot: " + players_dead);
+		}
+		
+		/*function start_timer(){
+			window.setInterval(countdown, 1000);
+		}
+		
+		function countdown(){
+			var time = $("#timer_div").html();			
+			time--;
+			$("#timer_div").html(time);
+		}*/
+		//This is fun
+	</script>
+  </body>
 </html>
