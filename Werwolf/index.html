@@ -80,10 +80,6 @@
 		<textarea id="note_box" class="inline" cols=30 rows=5>Nutze diesen Raum um etwas festzuhalten / schreibe Notizen.</textarea>
 	</div>
 
-              <form>
-              <input type="button" value="Go back!" onclick="history.back()">
-              </form>	  
-	
 	<script>	
 		var day = "Nacht";
 		var phase_counter = 1;
@@ -289,7 +285,7 @@
 			var checked_boxes = $("input[type='checkbox']");			
 			for(var i in checked_boxes){								
 				if(!isNaN(i)){										
-					$(checked_boxes[i]).attr('checked', false);
+					$(checked_boxes[i]).attr('checked', true);
 				}				
 			}						
 			
