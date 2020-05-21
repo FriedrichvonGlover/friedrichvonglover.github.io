@@ -1,0 +1,51 @@
+<script type="text/javascript">
+total = 0;
+List1 = 1;
+List2 = 1;
+
+function addUp(num, x)
+	 {	
+	 	if (x == "List1" && List1 == 1) {
+			temp = document.theForm.ttl.value;
+		 	tempo = parseInt(temp);
+		 	numo = parseInt(num);
+			nwTemp = tempo + numo;
+		 	document.theForm.ttl.value = nwTemp;
+			List1 = 0;
+			return List1;
+		}
+		if (x == "List1" && List1 == 0) {
+			temp = document.theForm.ttl.value;
+		 	tempo = parseInt(temp);
+		 	numo = parseInt(num);
+			nwTemp = tempo - numo;
+		 	document.theForm.ttl.value = nwTemp;
+			List1 = 1;
+		}
+		if (x == "List2" && List2 == 1) {
+			temp = document.theForm.ttl.value;
+		 	tempo = parseInt(temp);
+		 	numo = parseInt(num);
+			nwTemp = tempo + numo;
+		 	document.theForm.ttl.value = nwTemp;
+			List2 = 0;
+			return List2;
+		}
+		if (x == "List2" && List2 == 0) {
+			temp = document.theForm.ttl.value;
+		 	tempo = parseInt(temp);
+		 	numo = parseInt(num);
+			nwTemp = tempo - numo;
+		 	document.theForm.ttl.value = nwTemp;
+			List2 = 1;
+		}
+		
+	}
+</script>
+
+<form name="theForm">
+
+<input type="checkbox" onclick="addUp(-10, 'List1')">List 1 (-10)<br/>
+<input type="checkbox" onClick="addUp(15, 'List2')">List 2 (15)<br/>
+Total Number:<input type="text" name="ttl" value=0>
+</form>
