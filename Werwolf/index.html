@@ -131,7 +131,7 @@
 			roles = randomize_array(roles);
 			for(var i in players){
 				var person = players[i] + " - " + roles[i];
-				$("#game_div").append("<div name='player_div' class ='inline capital up'>"+person+"</div><br>");					
+				$("#game_div").append("<div name='player_div'>"+person+"</div>");					
 			}
 
 			$("div[name='player_div']").click(function(){
